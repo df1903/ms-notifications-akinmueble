@@ -36,6 +36,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# env files
+*.env
+
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,windows
 
-*.env
