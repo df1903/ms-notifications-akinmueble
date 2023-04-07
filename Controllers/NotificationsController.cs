@@ -92,12 +92,10 @@ public class NotificationsController : ControllerBase
         return msg;
     }
 
-    [Route ("send-new-password-sms")]
+    [Route ("send-sms")]
     [HttpPost]
-    public async Task<ActionResult> SendNewPasswordSMS(SMSModel data){
+    public async Task<ActionResult> SendSMS(SMSModel data){
         
-        Console.Write("Server Activo");
-
         var accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY");
         var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_KEY");
         var client = new AmazonSimpleNotificationServiceClient(accessKey, secretKey, RegionEndpoint.USEast1);
@@ -108,8 +106,6 @@ public class NotificationsController : ControllerBase
             StringValue = "Transactional"
         };
         messageAttributes.Add("AWS.SNS.SMS.SMSType", smsType);
-
-        Console.Write(accessKey + " " + secretKey);
 
         PublishRequest request = new PublishRequest{
             Message = data.smsBody,
