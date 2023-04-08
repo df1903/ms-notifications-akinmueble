@@ -9,12 +9,22 @@
         }
     },
     "profiles": {
-        "ms_notifications_akinmueble": {
+        "http": {
             "commandName": "Project",
             "dotnetRunMessages": true,
             "launchBrowser": true,
             "launchUrl": "swagger",
-            "applicationUrl": "https://localhost:7183",
+            "applicationUrl": "http://localhost:7183",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        "https": {
+            "commandName": "Project",
+            "dotnetRunMessages": true,
+            "launchBrowser": true,
+            "launchUrl": "swagger",
+            "applicationUrl": "https://localhost:7265;http://localhost:7183",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
