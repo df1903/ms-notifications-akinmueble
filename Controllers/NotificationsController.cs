@@ -12,6 +12,28 @@ namespace ms_notifications_akinmueble.Controllers;
 [Route("[controller]")]
 public class NotificationsController : ControllerBase
 {
+    [Route ("send-general-email")]
+    [HttpPost]
+    public async Task<ActionResult> SendEmailGeneral(EmailModel data){
+
+        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        var client = new SendGridClient(apiKey);
+
+        SendGridMessage msg = this.CreateBaseMessage(data);
+        msg.SetTemplateId(Environment.GetEnvironmentVariable("SEND_EMAIL_SENDGRID_TEMPLATE_ID"));
+        msg.SetTemplateData(new
+        {
+            subject= data.emailSubject,
+            message= data.emailBody
+        });
+        var response = await client.SendEmailAsync(msg);
+        if(response.StatusCode == System.Net.HttpStatusCode.Accepted){
+            return Ok("Email sent to the address "+  data.destinyEmail);
+        }else{
+            return BadRequest("Error sending the message to the address: " + data.destinyEmail);
+        }
+    }
+
     [Route ("welcome-email")]
     [HttpPost]
     public async Task<ActionResult> SendWelcomeEmail(EmailModel data){
