@@ -12,6 +12,28 @@ namespace ms_notifications_akinmueble.Controllers;
 [Route("[controller]")]
 public class NotificationsController : ControllerBase
 {
+    [Route ("send-email-general")]
+    [HttpPost]
+    public async Task<ActionResult> SendEmailGeneral(EmailModel data){
+
+        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        var client = new SendGridClient(apiKey);
+
+        SendGridMessage msg = this.CreateBaseMessage(data);
+        msg.SetTemplateId(Environment.GetEnvironmentVariable("SEND_EMAIL_SENDGRID_TEMPLATE_ID"));
+        msg.SetTemplateData(new
+        {
+            subject= data.emailSubject,
+            message= data.emailBody
+        });
+        var response = await client.SendEmailAsync(msg);
+        if(response.StatusCode == System.Net.HttpStatusCode.Accepted){
+            return Ok("Email sent to the address "+  data.destinyEmail);
+        }else{
+            return BadRequest("Error sending the message to the address: " + data.destinyEmail);
+        }
+    }
+
     [Route ("welcome-email")]
     [HttpPost]
     public async Task<ActionResult> SendWelcomeEmail(EmailModel data){
@@ -35,19 +57,19 @@ public class NotificationsController : ControllerBase
     }
 
 
-    [Route ("password-recovery-email")]
+    [Route ("recovery-password-email")]
     [HttpPost]
-    public async Task<ActionResult> SendPasswordRecoveryEmail(EmailModel data){
+    public async Task<ActionResult> SendRecoveryPasswordEmail(EmailModel data){
         
         var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
         var client = new SendGridClient(apiKey);
 
         SendGridMessage msg = this.CreateBaseMessage(data);
-        msg.SetTemplateId(Environment.GetEnvironmentVariable("WELCOME_SENDGRID_TEMPLATE_ID"));
+        msg.SetTemplateId(Environment.GetEnvironmentVariable("SEND_RECOVERY_PASSWORD_TEMPLATE_ID"));
         msg.SetTemplateData(new
         {
-            name=data.destinyName,
-            message="This is your new password... Do not share it."
+            message=data.emailBody,
+            subject=data.emailSubject
         });
         var response = await client.SendEmailAsync(msg);
         if(response.StatusCode == System.Net.HttpStatusCode.Accepted){
@@ -68,7 +90,50 @@ public class NotificationsController : ControllerBase
         msg.SetTemplateId(Environment.GetEnvironmentVariable("CODE2FA_SENDGRID_TEMPLATE_ID"));
         msg.SetTemplateData(new
         {
-            name=data.destinyName,
+            message=data.emailBody,
+            subject=data.emailSubject
+        });
+        var response = await client.SendEmailAsync(msg);
+        if(response.StatusCode == System.Net.HttpStatusCode.Accepted){
+            return Ok("Email sent to the address "+  data.destinyEmail);
+        }else{
+            return BadRequest("Error sending the message to the address: " + data.destinyEmail);
+        }
+    }
+
+    [Route ("send-advisor-credentials")]
+    [HttpPost]
+    public async Task<ActionResult> SendAdviserCredentialsEmail(EmailModel data){
+        
+        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        var client = new SendGridClient(apiKey);
+
+        SendGridMessage msg = this.CreateBaseMessage(data);
+        msg.SetTemplateId(Environment.GetEnvironmentVariable("SEND_ADVISOR_CREDENTIALS_TEMPLATE_ID"));
+        msg.SetTemplateData(new
+        {
+            message=data.emailBody,
+            subject=data.emailSubject
+        });
+        var response = await client.SendEmailAsync(msg);
+        if(response.StatusCode == System.Net.HttpStatusCode.Accepted){
+            return Ok("Email sent to the address "+  data.destinyEmail);
+        }else{
+            return BadRequest("Error sending the message to the address: " + data.destinyEmail);
+        }
+    }
+
+    [Route ("send-validate-email")]
+    [HttpPost]
+    public async Task<ActionResult> SendValidateEmail(EmailModel data){
+        
+        var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+        var client = new SendGridClient(apiKey);
+
+        SendGridMessage msg = this.CreateBaseMessage(data);
+        msg.SetTemplateId(Environment.GetEnvironmentVariable("SEND_VALIDATE_EMAIL_TEMPLATE_ID"));
+        msg.SetTemplateData(new
+        {
             message=data.emailBody,
             subject=data.emailSubject
         });
@@ -80,7 +145,6 @@ public class NotificationsController : ControllerBase
         }
     }
     
-
     private SendGridMessage CreateBaseMessage(EmailModel data){
         
         var from = new EmailAddress(Environment.GetEnvironmentVariable("EMAIL_FROM"), Environment.GetEnvironmentVariable("NAME_FROM"));
